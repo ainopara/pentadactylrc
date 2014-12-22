@@ -1,6 +1,7 @@
 "hg7063
 
 loadplugins '\.(js|penta)$'
+colorscheme vimium4
 group user
 
 map -count -modes=n -silent j -builtin <count>8j
