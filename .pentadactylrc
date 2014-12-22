@@ -1,0 +1,84 @@
+"hg7063
+
+loadplugins '\.(js|penta)$'
+group user
+
+map -count -modes=n -silent j -builtin <count>8j
+map -count -modes=n -silent k -builtin <count>8k
+set scrollsteps=30
+map -count -modes=n h -builtin <count><C-p>
+map -count -modes=n l -builtin <count><C-n>
+map -count -modes=n <C-h> -builtin <count><S-h>
+map -count -modes=n <C-l> -builtin <count><S-l>
+map -count -modes=hints z -builtin <Esc>
+"实现一键开关工具栏 {
+"map e :set go+=T<CR>
+"map <S-e> :set go-=T<CR>
+map -modes=n e -js options.get('guioptions').value.some(function(c){return c=='T'})?dactyl.execute(':set go-=T'):dactyl.execute(':set go+=T')
+" }
+
+"全屏模式 {
+command enter-fullscreen-mode
+	\ -description "enter fullscreen mode then hide tabs and scroll bar"
+    \ :set fs
+	\ :set showtabline=never
+	\ :set go-=s
+
+command exit-fullscreen-mode
+	\ -description "exit fullscreen mode then show tabs and scroll bar"
+	\ :set go+=s
+	\ :set showtabline=always
+    \ :set nofs
+
+"曾经设想的全屏实现方式为在options中增加选项，这个方案实际上意义不大，且实现不完全，已弃用。
+"javascript <<EOF
+"group.options.add(['toggle-fullscreen-mode', 'fsm'],
+"    'choose which window mode will be',
+"    'string',
+"    'window',
+"    {
+"        completer: function(context) [
+"            ['window', 'window mode'],
+"            ['fullscreen-all', 'fullscreen mode and hide tabline and scrollbars'],
+"            ['fullscreen-limit', 'normal fullscreen mode']
+"        ]
+"    }
+");
+"EOF
+
+"另一个使用了一段时间的全屏实现方式，既通过全屏时间触发设置变更，由于在hg7101@firefox33.1中部分失效，已弃用
+"au Fullscreen on set go-=s
+"au Fullscreen off set go+=s
+"au Fullscreen on set showtabline=never
+"au Fullscreen off set showtabline=always
+"map -modes=n w -builtin <C-M-f>
+
+"当前使用的全屏实现方式
+map -modes=n w -js options.get('fullscreen').value?dactyl.execute(':exit-fullscreen-mode'):dactyl.execute(':enter-fullscreen-mode')
+
+" }
+
+set hintkeys=asdfjklgheriop
+set nextpattern='\s*[下后][一]?[页张个篇章]\s*','^Next [>»]','^Next »','\bnext\b',^>$,'^(>>|»)$','^(>|»)','(>|»)$','\bmore\b'
+set previouspattern='\s*[上前][一]?[页张个篇章]\s*','[<«] Prev$','« Prev$','\bprev(ious)?\b',^<$,'^(<<|«)$','^(<|«)','(<|«)$'
+
+"定义在Safari打开当前页的快捷键，需要安装扩展<Open With>
+map -modes=n <S-M-s> :emenu View.Open with.Safari<CR>
+
+" 在command line 状态下自动禁用输入法 {
+style chrome://* #dactyl-commandline-command input {ime-mode: inactive;}
+style chrome://* #dactyl-statusline-field-commandline-command input {ime-mode: inactive;}
+" }
+
+map -modes=n c -builtin gn
+silent qmark a http://forums.animesuki.com/
+silent qmark b http://bangumi.tv/
+silent qmark m http://macrumors.com/
+silent qmark s http://www.solidot.org/
+silent qmark t https://www.twitter.com/
+silent qmark v http://www.v2ex.com/
+silent qmark w http://weibo.com/
+silent qmark z http://www.zhihu.com/
+
+
+" vim: set ft=pentadactyl:
